@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,16 +15,21 @@ namespace WebApp.Controllers
     public class EmployeesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Account> _userManager;
 
-        public EmployeesController(ApplicationDbContext context)
+        public EmployeesController(ApplicationDbContext context,UserManager<Account> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Employees
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Employees.Include(e => e.Contact).Include(e => e.Department);
+            var applicationDbContext = _context.Employees
+                .Include(e => e.Department)
+                .Include(e=>e.Contacts)
+                .Include(e=>e.Account);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -36,7 +42,6 @@ namespace WebApp.Controllers
             }
 
             var employee = await _context.Employees
-                .Include(e => e.Contact)
                 .Include(e => e.Department)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (employee == null)
@@ -50,7 +55,7 @@ namespace WebApp.Controllers
         // GET: Employees/Create
         public IActionResult Create()
         {
-            ViewData["ContactId"] = new SelectList(_context.Contacts, "Id", "Name");
+            ViewData["ContactId"] = new SelectList(_context.Contacts, "Id", "Surname");
             ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
             return View();
         }
@@ -60,17 +65,17 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ContactId,DepartmentId")] Employee employee)
+        public async Task<IActionResult> Create([Bind("Id,ContactId,Salary,AccountId,DepartmentId")] Employee employee)
         {
-            //if (ModelState.IsValid)
-            //{
-            //}
+            if (ModelState.IsValid)
+            {
                 _context.Add(employee);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            //ViewData["ContactId"] = new SelectList(_context.Contacts, "Id", "Name", employee.ContactId);
-            //ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", employee.DepartmentId);
-            //return View(employee);
+            }
+            ViewData["ContactId"] = new SelectList(_context.Contacts, "Id", "Surname");
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Id", employee.DepartmentId);
+            return View(employee);
         }
 
         // GET: Employees/Edit/5
@@ -86,7 +91,6 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["ContactId"] = new SelectList(_context.Contacts, "Id", "Id", employee.ContactId);
             ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Id", employee.DepartmentId);
             return View(employee);
         }
@@ -96,7 +100,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ContactId,DepartmentId")] Employee employee)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ContactId,Salary,AccountId,DepartmentId")] Employee employee)
         {
             if (id != employee.Id)
             {
@@ -123,7 +127,6 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ContactId"] = new SelectList(_context.Contacts, "Id", "Id", employee.ContactId);
             ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Id", employee.DepartmentId);
             return View(employee);
         }
@@ -137,7 +140,6 @@ namespace WebApp.Controllers
             }
 
             var employee = await _context.Employees
-                .Include(e => e.Contact)
                 .Include(e => e.Department)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (employee == null)

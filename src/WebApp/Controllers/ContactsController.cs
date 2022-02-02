@@ -23,9 +23,8 @@ namespace WebApp.Controllers
         // GET: Contacts
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Contacts
-                .Include(c=>c.Owner)
-                .ToListAsync());
+            var applicationDbContext = _context.Contacts.Include(c => c.Employee)?.ThenInclude(e=>e.Department);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Contacts/Details/5
@@ -37,6 +36,7 @@ namespace WebApp.Controllers
             }
 
             var contact = await _context.Contacts
+                .Include(c => c.Employee)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (contact == null)
             {
@@ -49,6 +49,7 @@ namespace WebApp.Controllers
         // GET: Contacts/Create
         public IActionResult Create()
         {
+            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id");
             return View();
         }
 
@@ -57,16 +58,16 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Surname,Phone,OwnerId")] Contact contact)
+        public async Task<IActionResult> Create([Bind("Id,Name,Surname,Phone,EmployeeId")] Contact contact)
         {
-            contact.OwnerId = _context.Users.First(u => u.UserName == User.Identity.Name).Id;
-            //if (ModelState.IsValid)
-            //{
-            //}
+            if (ModelState.IsValid)
+            {
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            //return View(contact);
+            }
+            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", contact.EmployeeId);
+            return View(contact);
         }
 
         // GET: Contacts/Edit/5
@@ -82,6 +83,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
+            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", contact.EmployeeId);
             return View(contact);
         }
 
@@ -90,7 +92,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Surname,Phone,OwnerId")] Contact contact)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Surname,Phone,EmployeeId")] Contact contact)
         {
             if (id != contact.Id)
             {
@@ -117,6 +119,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", contact.EmployeeId);
             return View(contact);
         }
 
@@ -129,6 +132,7 @@ namespace WebApp.Controllers
             }
 
             var contact = await _context.Contacts
+                .Include(c => c.Employee)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (contact == null)
             {

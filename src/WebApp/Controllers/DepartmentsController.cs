@@ -23,8 +23,7 @@ namespace WebApp.Controllers
         // GET: Departments
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Departments.Include(d => d.Manager);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _context.Departments.ToListAsync());
         }
 
         // GET: Departments/Details/5
@@ -36,7 +35,6 @@ namespace WebApp.Controllers
             }
 
             var department = await _context.Departments
-                .Include(d => d.Manager)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (department == null)
             {
@@ -49,7 +47,6 @@ namespace WebApp.Controllers
         // GET: Departments/Create
         public IActionResult Create()
         {
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -66,7 +63,6 @@ namespace WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", department.ManagerId);
             return View(department);
         }
 
@@ -83,7 +79,6 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", department.ManagerId);
             return View(department);
         }
 
@@ -119,7 +114,6 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", department.ManagerId);
             return View(department);
         }
 
@@ -132,7 +126,6 @@ namespace WebApp.Controllers
             }
 
             var department = await _context.Departments
-                .Include(d => d.Manager)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (department == null)
             {

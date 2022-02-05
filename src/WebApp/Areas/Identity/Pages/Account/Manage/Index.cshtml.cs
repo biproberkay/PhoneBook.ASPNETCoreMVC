@@ -15,12 +15,12 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<WebApp.Models.Account> _userManager;
-        private readonly SignInManager<WebApp.Models.Account> _signInManager;
+        private readonly UserManager<UserAccount> _userManager;
+        private readonly SignInManager<UserAccount> _signInManager;
 
         public IndexModel(
-            UserManager<WebApp.Models.Account> userManager,
-            SignInManager<WebApp.Models.Account> signInManager)
+            UserManager<UserAccount> userManager,
+            SignInManager<UserAccount> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -61,7 +61,7 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
         }
 
-        private async Task LoadAsync(WebApp.Models.Account user)
+        private async Task LoadAsync(UserAccount user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);

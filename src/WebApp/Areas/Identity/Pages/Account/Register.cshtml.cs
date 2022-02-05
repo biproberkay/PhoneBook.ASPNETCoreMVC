@@ -24,17 +24,17 @@ namespace WebApp.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<WebApp.Models.Account> _signInManager;
-        private readonly UserManager<WebApp.Models.Account> _userManager;
-        private readonly IUserStore<WebApp.Models.Account> _userStore;
-        private readonly IUserEmailStore<WebApp.Models.Account> _emailStore;
+        private readonly SignInManager<UserAccount> _signInManager;
+        private readonly UserManager<UserAccount> _userManager;
+        private readonly IUserStore<UserAccount> _userStore;
+        private readonly IUserEmailStore<UserAccount> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<WebApp.Models.Account> userManager,
-            IUserStore<WebApp.Models.Account> userStore,
-            SignInManager<WebApp.Models.Account> signInManager,
+            UserManager<UserAccount> userManager,
+            IUserStore<UserAccount> userStore,
+            SignInManager<UserAccount> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -155,27 +155,27 @@ namespace WebApp.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private WebApp.Models.Account CreateUser()
+        private UserAccount CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<WebApp.Models.Account>();
+                return Activator.CreateInstance<UserAccount>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(Account)}'. " +
-                    $"Ensure that '{nameof(Account)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(UserAccount)}'. " +
+                    $"Ensure that '{nameof(UserAccount)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<WebApp.Models.Account> GetEmailStore()
+        private IUserEmailStore<UserAccount> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<WebApp.Models.Account>)_userStore;
+            return (IUserEmailStore<UserAccount>)_userStore;
         }
     }
 }

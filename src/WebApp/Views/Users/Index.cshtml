@@ -1,4 +1,4 @@
-﻿@model IEnumerable<WebApp.ViewModels.Users.UserViewModel>
+﻿@model IEnumerable<WebApp.ViewModels.ContactViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -22,10 +22,7 @@
                 @Html.DisplayNameFor(model => model.Surname)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserName)
+                info
             </th>
             <th></th>
         </tr>
@@ -43,10 +40,9 @@
                 @Html.DisplayFor(modelItem => item.Surname)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
+                <small class="text-break">
+                    @item.DepartmentName ·den @item.OwnerFullName 'a ait
+                </small>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

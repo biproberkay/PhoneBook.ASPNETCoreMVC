@@ -23,5 +23,9 @@ Kullanıcının bağlantı bilgisi yöneticiye düşer. yönetici bağlantı bil
 |Identity|
 
 # Tasks
+## Kazanımlar
+- select kullanmayı deneyimledim
+- viewmodel de id propertysi tutarak code generator·ü kullanmayı deneyimledim.
+
 
 

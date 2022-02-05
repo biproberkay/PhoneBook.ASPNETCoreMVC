@@ -1,4 +1,4 @@
-﻿@model WebApp.Models.Employee
+﻿@model WebApp.ViewModels.EmployeeViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,7 +6,7 @@
 
 <h1>Edit</h1>
 
-<h4>Employee</h4>
+<h4>EmployeeViewModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,9 +14,16 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="ContactId" class="control-label"></label>
-                <input asp-for="ContactId" class="form-control" />
-                <span asp-validation-for="ContactId" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                 <input  readonly asp-for="Name" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Surname" class="control-label"></label>
+                 <input  readonly asp-for="Surname" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label"></label>
+                 <input  readonly asp-for="Phone" class="form-control" />
             </div>
             <div class="form-group">
                 <label asp-for="Salary" class="control-label"></label>
@@ -24,14 +31,20 @@
                 <span asp-validation-for="Salary" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="AccountId" class="control-label"></label>
-                <input asp-for="AccountId" class="form-control" />
-                <span asp-validation-for="AccountId" class="text-danger"></span>
+                <label asp-for="UserName" class="control-label"></label>
+                 <input  readonly asp-for="UserName" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="DepartmentId" class="control-label"></label>
-                <select asp-for="DepartmentId" class="form-control" asp-items="ViewBag.DepartmentId"></select>
-                <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                <label asp-for="Email" class="control-label"></label>
+                 <input  readonly asp-for="Email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                 <input  readonly asp-for="PhoneNumber" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="DepartmentName" class="control-label"></label>
+                 <input  readonly asp-for="DepartmentName" class="form-control" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

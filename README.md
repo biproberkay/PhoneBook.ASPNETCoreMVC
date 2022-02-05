@@ -16,4 +16,7 @@ Kullanıcının bağlantı bilgisi yöneticiye düşer. yönetici bağlantı bil
 
 # Tasks
 
+# Kazanımlar
+- context·ten aldığım entity model class·ının referansına yazılmış data·yı viewmodel class·ına map eden bir method yazdım.
+- [validation attributes](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-6.0#built-in-attributes) viewmodel kullanma tekniğimi geliştirdim. bununla ilgili ham notlarım [link](.\developer-diary\validasyon.md)teki markdown dosyasında
 

@@ -10,7 +10,7 @@
         public Account? Account { get; set; }
         public int DepartmentId { get; set; } = 1;
         public Department Department { get; set; }
-        public List<Contact> Contacts { get; set; }
+        public List<Contact> ContactList { get; set; }
 
     }
 }

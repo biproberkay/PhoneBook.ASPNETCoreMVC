@@ -225,12 +225,12 @@ namespace WebApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -242,7 +242,7 @@ namespace WebApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Contacts");
                 });
@@ -280,7 +280,7 @@ namespace WebApp.Data.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Salary")
+                    b.Property<int?>("Salary")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -343,18 +343,20 @@ namespace WebApp.Data.Migrations
 
             modelBuilder.Entity("WebApp.Models.Account", b =>
                 {
-                    b.HasOne("WebApp.Models.Employee", null)
+                    b.HasOne("WebApp.Models.Employee", "Employee")
                         .WithOne("Account")
                         .HasForeignKey("WebApp.Models.Account", "EmployeeId");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("WebApp.Models.Contact", b =>
                 {
-                    b.HasOne("WebApp.Models.Employee", "Employee")
-                        .WithMany("Contacts")
-                        .HasForeignKey("EmployeeId");
+                    b.HasOne("WebApp.Models.Employee", "Owner")
+                        .WithMany("ContactList")
+                        .HasForeignKey("OwnerId");
 
-                    b.Navigation("Employee");
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("WebApp.Models.Employee", b =>
@@ -377,7 +379,7 @@ namespace WebApp.Data.Migrations
                 {
                     b.Navigation("Account");
 
-                    b.Navigation("Contacts");
+                    b.Navigation("ContactList");
                 });
 #pragma warning restore 612, 618
         }

@@ -65,7 +65,7 @@ namespace WebApp.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ContactId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Salary = table.Column<int>(type: "INTEGER", nullable: false),
+                    Salary = table.Column<int>(type: "INTEGER", nullable: true),
                     AccountId = table.Column<int>(type: "INTEGER", nullable: true),
                     DepartmentId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -120,14 +120,14 @@ namespace WebApp.Data.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Surname = table.Column<string>(type: "TEXT", nullable: false),
                     Phone = table.Column<string>(type: "TEXT", nullable: false),
-                    EmployeeId = table.Column<int>(type: "INTEGER", nullable: true)
+                    OwnerId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Contacts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Contacts_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
+                        name: "FK_Contacts_Employees_OwnerId",
+                        column: x => x.OwnerId,
                         principalTable: "Employees",
                         principalColumn: "Id");
                 });
@@ -261,9 +261,9 @@ namespace WebApp.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contacts_EmployeeId",
+                name: "IX_Contacts_OwnerId",
                 table: "Contacts",
-                column: "EmployeeId");
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_DepartmentId",

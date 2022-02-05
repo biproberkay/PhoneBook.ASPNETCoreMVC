@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Data;
-using WebApp.Models;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
@@ -23,8 +23,23 @@ namespace WebApp.Controllers
         // GET: Contacts
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Contacts.Include(c => c.Employee)?.ThenInclude(e=>e.Department);
-            return View(await applicationDbContext.ToListAsync());
+            var contacts = await _context.Contacts.Include(c=>c.Owner).ThenInclude(e=>e.Department).ToListAsync();
+            var modelList = new List<ContactViewModel>();
+            foreach (var contact in contacts)
+            {
+                var ownerContactInfo = contacts.FirstOrDefault(c => c.Id == contact.Owner.ContactId);
+                var model = new ContactViewModel
+                {
+                    Id = contact.Id,
+                    Name = contact.Name,
+                    Surname = contact.Surname,
+                    Phone = contact.Phone,
+                    OwnerFullName = ownerContactInfo.Name+" "+ownerContactInfo.Surname,
+                    DepartmentName = contact.Owner.Department.Name
+                };
+                modelList.Add(model);
+            }
+            return View(modelList);
         }
 
         // GET: Contacts/Details/5
@@ -35,21 +50,19 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var contact = await _context.Contacts
-                .Include(c => c.Employee)
+            var contactViewModel = await _context.Contacts
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contact == null)
+            if (contactViewModel == null)
             {
                 return NotFound();
             }
 
-            return View(contact);
+            return View(contactViewModel);
         }
 
         // GET: Contacts/Create
         public IActionResult Create()
         {
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id");
             return View();
         }
 
@@ -58,16 +71,15 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Surname,Phone,EmployeeId")] Contact contact)
+        public async Task<IActionResult> Create([Bind("Id,Name,Surname,Phone,OwnerFullName,DepartmentName")] ContactViewModel contactViewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(contact);
+                _context.Add(contactViewModel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", contact.EmployeeId);
-            return View(contact);
+            return View(contactViewModel);
         }
 
         // GET: Contacts/Edit/5
@@ -78,13 +90,12 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var contact = await _context.Contacts.FindAsync(id);
-            if (contact == null)
+            var contactViewModel = await _context.Contacts.FindAsync(id);
+            if (contactViewModel == null)
             {
                 return NotFound();
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", contact.EmployeeId);
-            return View(contact);
+            return View(contactViewModel);
         }
 
         // POST: Contacts/Edit/5
@@ -92,9 +103,9 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Surname,Phone,EmployeeId")] Contact contact)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Surname,Phone,OwnerFullName,DepartmentName")] ContactViewModel contactViewModel)
         {
-            if (id != contact.Id)
+            if (id != contactViewModel.Id)
             {
                 return NotFound();
             }
@@ -103,12 +114,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(contact);
+                    _context.Update(contactViewModel);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ContactExists(contact.Id))
+                    if (!ContactViewModelExists(contactViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -119,8 +130,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Id", contact.EmployeeId);
-            return View(contact);
+            return View(contactViewModel);
         }
 
         // GET: Contacts/Delete/5
@@ -131,15 +141,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var contact = await _context.Contacts
-                .Include(c => c.Employee)
+            var contactViewModel = await _context.Contacts
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contact == null)
+            if (contactViewModel == null)
             {
                 return NotFound();
             }
 
-            return View(contact);
+            return View(contactViewModel);
         }
 
         // POST: Contacts/Delete/5
@@ -147,13 +156,13 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var contact = await _context.Contacts.FindAsync(id);
-            _context.Contacts.Remove(contact);
+            var contactViewModel = await _context.Contacts.FindAsync(id);
+            _context.Contacts.Remove(contactViewModel);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ContactExists(int id)
+        private bool ContactViewModelExists(int id)
         {
             return _context.Contacts.Any(e => e.Id == id);
         }

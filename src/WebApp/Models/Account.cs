@@ -9,6 +9,7 @@ namespace WebApp.Models
 
         }
         public int? EmployeeId { get; set; }
+        public Employee Employee { get; set; }
 
     }
 }

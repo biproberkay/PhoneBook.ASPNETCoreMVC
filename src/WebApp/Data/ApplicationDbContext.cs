@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
 using WebApp.ViewModels;
-using WebApp.ViewModels.Users;
 
 namespace WebApp.Data
 {
@@ -12,8 +11,10 @@ namespace WebApp.Data
             : base(options)
         {
         }
-        public DbSet<WebApp.Models.Contact> Contacts { get; set; }
-        public DbSet<WebApp.Models.Department> Departments { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<Department> Departments { get; set; }
         public DbSet<Employee> Employees { get; set; }
+
     }
 }

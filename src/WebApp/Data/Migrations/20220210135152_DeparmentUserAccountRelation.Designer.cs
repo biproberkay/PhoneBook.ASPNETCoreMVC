@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApp.Data;
 
@@ -10,9 +11,10 @@ using WebApp.Data;
 namespace WebApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220210135152_DeparmentUserAccountRelation")]
+    partial class DeparmentUserAccountRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.2");
@@ -170,9 +172,6 @@ namespace WebApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -190,8 +189,6 @@ namespace WebApp.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("OwnerId");
 
@@ -373,17 +370,11 @@ namespace WebApp.Data.Migrations
 
             modelBuilder.Entity("WebApp.Models.Contact", b =>
                 {
-                    b.HasOne("WebApp.Models.Department", "Department")
-                        .WithMany("Contacts")
-                        .HasForeignKey("DepartmentId");
-
                     b.HasOne("WebApp.Models.UserAccount", "Owner")
                         .WithMany("ContactList")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Department");
 
                     b.Navigation("Owner");
                 });
@@ -429,8 +420,6 @@ namespace WebApp.Data.Migrations
 
             modelBuilder.Entity("WebApp.Models.Department", b =>
                 {
-                    b.Navigation("Contacts");
-
                     b.Navigation("Employees");
                 });
 

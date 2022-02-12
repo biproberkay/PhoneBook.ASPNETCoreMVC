@@ -3,52 +3,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Data;
-using WebApp.ViewModels;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    public class ContactsController : Controller
+    [Authorize(Roles ="admin")]
+    public class DepartmentsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ContactsController(ApplicationDbContext context)
+        public DepartmentsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Contacts
+        // GET: Departments
         public async Task<IActionResult> Index()
         {
-            var contacts = await _context.Contacts
-                .Include(c=>c.Owner)
-                .Include(c => c.Department)
-                    .ThenInclude(d=>d.Company)
-                .Include(c => c.Department)
-                    .ThenInclude(d => d.Manager)
-                .ToListAsync();
-            var contactList = new List<ContactViewModel> { };
-            foreach (var contact in contacts)
-            {
-                contactList.Add( new ContactViewModel {
-                    Name = contact.Name,
-                    Surname = contact.Surname,
-                    Phone = contact.Phone,
-                    Owner = contact.Owner.FullName,
-                    Company = contact.Department?.Company.Name,
-                    Department = //"department",
-                        contact.Department?.Name, 
-                    Manager = //"manager"
-                        contact.Department?.Manager?.Name
-                });
-            }
-            return View(contactList);
+            var applicationDbContext = _context.Departments.Include(d => d.Company);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Contacts/Details/5
+        // GET: Departments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -56,39 +37,42 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var contactViewModel = await _context.Contacts
+            var department = await _context.Departments
+                .Include(d => d.Company)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contactViewModel == null)
+            if (department == null)
             {
                 return NotFound();
             }
 
-            return View(contactViewModel);
+            return View(department);
         }
 
-        // GET: Contacts/Create
+        // GET: Departments/Create
         public IActionResult Create()
         {
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Id");
             return View();
         }
 
-        // POST: Contacts/Create
+        // POST: Departments/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Surname,Phone,Manager,Department")] ContactViewModel contactViewModel)
+        public async Task<IActionResult> Create([Bind("Id,Name,CompanyId")] Department department)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(contactViewModel);
+                _context.Add(department);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(contactViewModel);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Id", department.CompanyId);
+            return View(department);
         }
 
-        // GET: Contacts/Edit/5
+        // GET: Departments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -96,22 +80,23 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var contactViewModel = await _context.Contacts.FindAsync(id);
-            if (contactViewModel == null)
+            var department = await _context.Departments.FindAsync(id);
+            if (department == null)
             {
                 return NotFound();
             }
-            return View(contactViewModel);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Id", department.CompanyId);
+            return View(department);
         }
 
-        // POST: Contacts/Edit/5
+        // POST: Departments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Surname,Phone,Manager,Department")] ContactViewModel contactViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CompanyId")] Department department)
         {
-            if (id != contactViewModel.Id)
+            if (id != department.Id)
             {
                 return NotFound();
             }
@@ -120,12 +105,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(contactViewModel);
+                    _context.Update(department);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ContactViewModelExists(contactViewModel.Id))
+                    if (!DepartmentExists(department.Id))
                     {
                         return NotFound();
                     }
@@ -136,10 +121,11 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(contactViewModel);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Id", department.CompanyId);
+            return View(department);
         }
 
-        // GET: Contacts/Delete/5
+        // GET: Departments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -147,30 +133,31 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var contactViewModel = await _context.Contacts
+            var department = await _context.Departments
+                .Include(d => d.Company)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contactViewModel == null)
+            if (department == null)
             {
                 return NotFound();
             }
 
-            return View(contactViewModel);
+            return View(department);
         }
 
-        // POST: Contacts/Delete/5
+        // POST: Departments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var contactViewModel = await _context.Contacts.FindAsync(id);
-            _context.Contacts.Remove(contactViewModel);
+            var department = await _context.Departments.FindAsync(id);
+            _context.Departments.Remove(department);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ContactViewModelExists(int id)
+        private bool DepartmentExists(int id)
         {
-            return _context.Contacts.Any(e => e.Id == id);
+            return _context.Departments.Any(e => e.Id == id);
         }
     }
 }

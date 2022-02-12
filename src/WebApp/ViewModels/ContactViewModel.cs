@@ -11,10 +11,19 @@ namespace WebApp.ViewModels
         [Phone]
         public string Phone { get; set; }
 
-        [Display(Name ="Whose Contact")]
-        public string OwnerFullName { get; set; }
+#if true
+        [Display(Name = "Owner")]
+        public string Owner { get; set; }
 
-        [Display(Name="Department")]
-        public string? DepartmentName { get; set; }
+        [Display(Name = "Department")]
+        public string? Department { get; set; } = "NAN"; 
+
+        [Display(Name ="Company")]
+        public string Company { get; set;} 
+
+        [Display(Name = "Manager")]
+        public string? Manager { get; set; }
+#endif
+
     }
 }

@@ -11,11 +11,7 @@ using WebApp.Data;
 namespace WebApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:src/WebApp/Data/Migrations/20220202200045_Initial.Designer.cs
-    [Migration("20220202200045_Initial")]
-========
-    [Migration("20220205131358_Initial")]
->>>>>>>> feature/contact:src/WebApp/Data/Migrations/20220205131358_Initial.Designer.cs
+    [Migration("20220208081551_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,6 +151,96 @@ namespace WebApp.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("WebApp.Models.Company", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("WebApp.Models.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("WebApp.Models.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("WebApp.Models.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("Salary")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserAccountId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("UserAccountId")
+                        .IsUnique();
+
+                    b.ToTable("Employees");
+                });
+
             modelBuilder.Entity("WebApp.Models.UserAccount", b =>
                 {
                     b.Property<string>("Id")
@@ -225,80 +311,6 @@ namespace WebApp.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-<<<<<<<< HEAD:src/WebApp/Data/Migrations/20220202200045_Initial.Designer.cs
-========
-            modelBuilder.Entity("WebApp.Models.Contact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("OwnerId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Contacts");
-                });
-
-            modelBuilder.Entity("WebApp.Models.Department", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ManagerId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Departments");
-                });
-
-            modelBuilder.Entity("WebApp.Models.Employee", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("AccountId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ContactId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("Salary")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.ToTable("Employees");
-                });
-
->>>>>>>> feature/contact:src/WebApp/Data/Migrations/20220205131358_Initial.Designer.cs
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -349,36 +361,49 @@ namespace WebApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
-<<<<<<<< HEAD:src/WebApp/Data/Migrations/20220202200045_Initial.Designer.cs
-========
-
-            modelBuilder.Entity("WebApp.Models.Account", b =>
-                {
-                    b.HasOne("WebApp.Models.Employee", "Employee")
-                        .WithOne("Account")
-                        .HasForeignKey("WebApp.Models.Account", "EmployeeId");
-
-                    b.Navigation("Employee");
-                });
 
             modelBuilder.Entity("WebApp.Models.Contact", b =>
                 {
-                    b.HasOne("WebApp.Models.Employee", "Owner")
+                    b.HasOne("WebApp.Models.UserAccount", "Owner")
                         .WithMany("ContactList")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("WebApp.Models.Department", b =>
+                {
+                    b.HasOne("WebApp.Models.Company", "Company")
+                        .WithMany("Departments")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("WebApp.Models.Employee", b =>
                 {
                     b.HasOne("WebApp.Models.Department", "Department")
                         .WithMany("Employees")
-                        .HasForeignKey("DepartmentId")
+                        .HasForeignKey("DepartmentId");
+
+                    b.HasOne("WebApp.Models.UserAccount", "UserAccount")
+                        .WithOne("Employee")
+                        .HasForeignKey("WebApp.Models.Employee", "UserAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Department");
+
+                    b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("WebApp.Models.Company", b =>
+                {
+                    b.Navigation("Departments");
                 });
 
             modelBuilder.Entity("WebApp.Models.Department", b =>
@@ -386,13 +411,12 @@ namespace WebApp.Data.Migrations
                     b.Navigation("Employees");
                 });
 
-            modelBuilder.Entity("WebApp.Models.Employee", b =>
+            modelBuilder.Entity("WebApp.Models.UserAccount", b =>
                 {
-                    b.Navigation("Account");
-
                     b.Navigation("ContactList");
+
+                    b.Navigation("Employee");
                 });
->>>>>>>> feature/contact:src/WebApp/Data/Migrations/20220205131358_Initial.Designer.cs
 #pragma warning restore 612, 618
         }
     }

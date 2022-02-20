@@ -9,8 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using WebApp.Data;
 using WebApp.ViewModels;
 
-namespace WebApp.Controllers
+namespace WebApp.Areas.Controllers
 {
+    [Area(areaName:"Admin")]
     public class ContactsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,9 +24,13 @@ namespace WebApp.Controllers
         // GET: Contacts
         public async Task<IActionResult> Index()
         {
-            // departmanı olmayan tanıdıklar şirkette çalışmıyor demektir. umumi listeye dahil olan tanıdıklar, çalışan olmayan tanıdıklardır.
-            var contacts = await _context.Contacts.Where(x => x.DepartmentId == null).ToListAsync();
-
+            var contacts = await _context.Contacts
+                .Include(c=>c.Owner)
+                .Include(c => c.Department)
+                    .ThenInclude(d=>d.Company)
+                .Include(c => c.Department)
+                    .ThenInclude(d => d.Manager)
+                .ToListAsync();
             var contactList = new List<ContactViewModel> { };
             foreach (var contact in contacts)
             {
@@ -33,7 +38,7 @@ namespace WebApp.Controllers
                     Name = contact.Name,
                     Surname = contact.Surname,
                     Phone = contact.Phone,
-                    Owner = contact.Owner?.FullName,
+                    Owner = contact.Owner.FullName,
                     Company = contact.Department?.Company.Name,
                     Department = //"department",
                         contact.Department?.Name, 

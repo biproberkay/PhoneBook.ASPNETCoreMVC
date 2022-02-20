@@ -79,6 +79,13 @@ namespace WebApp.Data
                     Surname = "Bilen",
                     Phone = "5398220128",
                     OwnerId = users[0].Id
+                },
+                new Contact
+                {
+                    Name = "Taspar",
+                    Surname = "Böke",
+                    Phone = "5398220128",
+                    OwnerId = users[0].Id
                 }
 
             };

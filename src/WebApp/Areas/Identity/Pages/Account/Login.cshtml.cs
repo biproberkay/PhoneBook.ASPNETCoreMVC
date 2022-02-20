@@ -21,10 +21,12 @@ namespace WebApp.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly SignInManager<UserAccount> _signInManager;
+        private readonly UserManager<UserAccount> _userManager; 
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<UserAccount> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<UserAccount> signInManager, ILogger<LoginModel> logger, UserManager<UserAccount> userManager)
         {
+            _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -113,9 +115,15 @@ namespace WebApp.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var user = await _userManager.FindByNameAsync(Input.Email);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    _logger.LogInformation("User logged in.");                    
+                    var rolecheck = await _userManager.IsInRoleAsync(user, "admin");
+                    if (rolecheck)
+                    {
+                        return RedirectToAction("index", "contacts", new { area = "admin" });
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
